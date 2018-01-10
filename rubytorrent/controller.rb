@@ -35,7 +35,7 @@ class PieceOrder
   end
 
   ## increment the popularity of a piece
-  def inc(i) 
+  def inc(i)
     @m.synchronize do
       @pop[i.to_i] += 1
       @num_changed += 1
@@ -45,7 +45,7 @@ class PieceOrder
   ## increment the popularity of multiple pieces
   def inc_all(bitfield, inc=1)
     @m.synchronize do
-      bitfield.each_index do |i| 
+      bitfield.each_index do |i|
         if bitfield[i]
           @pop[i] += inc
           @num_changed += 1
@@ -252,7 +252,7 @@ class Controller
       oldp = @peers.find { |x| !x.running? || ((x.dlamt == 0) && ((Time.now - x.start_time) > BOREDOM_DEATH_INTERVAL)) }
 
       if oldp
-        rt_debug "killing peer for being boring: #{oldp}" 
+        rt_debug "killing peer for being boring: #{oldp}"
         oldp.shutdown
       else
         rt_debug "too many peers, ignoring #{p}"
@@ -537,7 +537,7 @@ class Controller
         next unless p.running?
         if ((Time.now - (p.last_send_time || p.start_time)) > SILENT_DEATH_INTERVAL)
           rt_warning "shutting down peer #{p} for silence/boredom"
-          p.shutdown 
+          p.shutdown
         end
       end
     end
@@ -547,7 +547,7 @@ class Controller
       @peers.delete_if do |p|
         !p.running? && begin
           p.unregister_events self
-          @piece_order.dec_all p.peer_pieces                 
+          @piece_order.dec_all p.peer_pieces
           rt_debug "burying corpse of #{p}"
           send_event(:removed_peer, p)
           true
@@ -582,9 +582,9 @@ class Controller
     calc_optunchokes
 
     ## this is needed. sigh.
-    break unless @running
+    abort unless @running
 
-    ## send keepalives 
+    ## send keepalives
     @peers_m.synchronize { @peers.each { |p| p.send_keepalive if p.running? && p.last_send_time && ((Time.now - p.last_send_time) > KEEPALIVE_INTERVAL) } }
 
     ## now we apportion our bandwidth amongst all the peers. we'll go
